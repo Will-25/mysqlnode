@@ -30,6 +30,7 @@ Quantity:         ${result[i].stock_quantity}
 ----------------------`)
         }
         run();
+        
     })
 };
 showstuff();
@@ -49,34 +50,53 @@ function run() {
             for (var i = 0; i < res.length; i++) {
                 if (input === res[i].item_id) {
                     foundSomething = true;
-                    x = `
+                    table = `
 Product ID:       ${res[i].item_id}
 Product Title:    ${res[i].product_name}
 Department Title: ${res[i].department_name}
 Price:            ${res[i].price}
 Quantity:         ${res[i].stock_quantity}
 `
-                    var quantity = res[i].stock_quantity
-                    console.log(x)
+                    var userID = res[i].item_id
+                    var price = res[i].price;
+                    var quantity = res[i].stock_quantity;
+                    console.log(table)
                     inquirer.prompt([
                         {
                             type: "number",
                             name: "quantity",
                             message: "How many of this item do you want?"
                         }
-                    ]).then(function(user){
-                        
-                        if(user > quantity) {
-                            console.log("we aint got that")
+                    ]).then(function (user) {
+                        if (user.quantity <= quantity) {
+                            var total = user.quantity * price
+                            var newQuantity = quantity - user.quantity
+                            console.log("here ya go!");
+                            console.log("your total comes to: $" + total.toFixed(2));
+                            function update(res) {
+                                connection.query("UPDATE products SET ? WHERE ?", [
+                                    {
+                                        stock_quantity: newQuantity
+                                    },
+                                    {
+                                        item_id: userID
+                                    }
+                                ])
+                              
+                            };
+                            update();
+                           
                         } else {
-                            console.log("here yea go")
+                            console.log("we dont have enough of that product :(");
+                            run();
                         }
-                    }) 
+                    });
 
 
                 }
             } if (foundSomething === false) {
                 console.log("pick an actual item id!!")
+                run();
             }
 
 
@@ -86,8 +106,8 @@ Quantity:         ${res[i].stock_quantity}
 
 
     });
+
 }
 
-// run();
 
-// connection.end();
+
