@@ -1,7 +1,7 @@
 var mysql = require("mysql");
 var inquirer = require("inquirer");
 var result = {};
-var x;
+var table;
 var connection = mysql.createConnection({
     host: "localhost",
     port: 3306,
@@ -73,7 +73,7 @@ Quantity:         ${res[i].stock_quantity}
                             var newQuantity = quantity - user.quantity
                             console.log("here ya go!");
                             console.log("your total comes to: $" + total.toFixed(2));
-                            function update(res) {
+                            function update() {
                                 connection.query("UPDATE products SET ? WHERE ?", [
                                     {
                                         stock_quantity: newQuantity
@@ -82,7 +82,8 @@ Quantity:         ${res[i].stock_quantity}
                                         item_id: userID
                                     }
                                 ])
-                              
+                               console.log("We have " + newQuantity + " of those left!")
+                            connection.end();
                             };
                             update();
                            
@@ -106,7 +107,7 @@ Quantity:         ${res[i].stock_quantity}
 
 
     });
-
+    
 }
 
 
